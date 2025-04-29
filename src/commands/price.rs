@@ -1,96 +1,90 @@
 use async_trait::async_trait;
-use chrono::Utc;
-use oc_bots_sdk::api::command::{CommandDefinition, CommandHandler, CommandResponse};
-use oc_bots_sdk::api::definition::CommandDefinitionParameter;
-use oc_bots_sdk::api::definition::CommandDefinitionParameterType;
-use oc_bots_sdk::api::definition::CommandDefinitionParameters;
-use oc_bots_sdk::api::definition::CommandDefinitionResponse;
-use oc_bots_sdk::api::definition::CommandDefinitionResponseType;
-use oc_bots_sdk::api::definition::CommandDefinitionResponses;
-use oc_bots_sdk::api::definition::CommandDefinitionScope;
-use oc_bots_sdk::api::definition::CommandDefinitionSummary;
-use oc_bots_sdk::api::definition::CommandDefinitionUsage;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageExample;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageExamples;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageParameter;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageParameters;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageResponse;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageResponses;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageScope;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageSummary;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageType;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageTypes;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageValue;
-use oc_bots_sdk::api::definition::CommandDefinitionUsageValues;
-use oc_bots_sdk::api::definition::CommandDefinitionValue;
-use oc_bots_sdk::api::definition::CommandDefinitionValues;
-use oc_bots_sdk::api::definition::CommandDefinitionVersion;
-use oc_bots_sdk::api::definition::CommandDefinitionVersions;
-use oc_bots_sdk::api::definition::CommandDefinitionVersionsType;
-use oc_bots_sdk::api::definition::CommandDefinitionVersionsTypes;
-use oc_bots_sdk::oc_api::client::ClientFactory;
-use rust_decimal::Decimal;
-use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+use oc_bots_sdk::api::command::{CommandHandler, SuccessResult};
+use oc_bots_sdk::api::definition::*;
+use oc_bots_sdk::types::BotCommandContext;
+use oc_bots_sdk_offchain::AgentRuntime;
+use oc_bots_sdk::oc_api::client::Client;
+use std::sync::LazyLock;
+use reqwest;
+
+static DEFINITION: LazyLock<BotCommandDefinition> = LazyLock::new(Price::definition);
 
 pub struct Price;
 
-#[derive(Debug, Serialize, Deserialize)]
-struct PriceResponse {
-    price: String,
-    timestamp: i64,
-}
-
 #[async_trait]
-impl CommandHandler for Price {
-    fn definition(&self) -> CommandDefinition {
-        CommandDefinition {
-            name: "price".to_string(),
-            description: "Get the current price of ICP".to_string(),
-            scope: CommandDefinitionScope::Public,
-            parameters: CommandDefinitionParameters(vec![]),
-            responses: CommandDefinitionResponses(vec![
-                CommandDefinitionResponse {
-                    title: "Current ICP Price".to_string(),
-                    response_type: CommandDefinitionResponseType::Message,
-                },
-            ]),
-        }
+impl CommandHandler<AgentRuntime> for Price {
+    fn definition(&self) -> &BotCommandDefinition {
+        &DEFINITION
     }
 
     async fn execute(
         &self,
-        _params: Vec<String>,
-        client_factory: Arc<ClientFactory>,
-        _now: u64,
-    ) -> CommandResponse {
-        // Fetch ICP price from CoinGecko API
-        let client = reqwest::Client::new();
-        let url = "https://api.coingecko.com/api/v3/simple/price?ids=internet-computer&vs_currencies=usd";
+        client: Client<AgentRuntime, BotCommandContext>,
+    ) -> Result<SuccessResult, String> {
+        let symbol = client.context().command.arg::<String>("symbol").to_uppercase();
         
-        match client.get(url).send().await {
+        // Use CoinGecko API to get price data
+        let http_client = reqwest::Client::new();
+        let url = format!(
+            "https://api.coingecko.com/api/v3/simple/price?ids={}&vs_currencies=usd",
+            match symbol.as_str() {
+                "BTC" => "bitcoin",
+                "ETH" => "ethereum",
+                "ICP" => "internet-computer",
+                _ => return Err("Unsupported cryptocurrency symbol".into()),
+            }
+        );
+
+        match http_client.get(&url).send().await {
             Ok(response) => {
                 match response.json::<serde_json::Value>().await {
                     Ok(data) => {
-                        if let Some(price) = data["internet-computer"]["usd"].as_f64() {
-                            let price_decimal = Decimal::from_f64(price).unwrap_or_default();
-                            let response = PriceResponse {
-                                price: format!("${:.2}", price_decimal),
-                                timestamp: Utc::now().timestamp(),
-                            };
-                            
-                            CommandResponse::Success(serde_json::json!({
-                                "text": format!("Current ICP Price: {}\nLast updated: <t:{}:R>", 
-                                    response.price, response.timestamp)
-                            }))
-                        } else {
-                            CommandResponse::InternalError("Failed to parse price data".to_string())
+                        let price = match symbol.as_str() {
+                            "BTC" => data["bitcoin"]["usd"].as_f64(),
+                            "ETH" => data["ethereum"]["usd"].as_f64(),
+                            "ICP" => data["internet-computer"]["usd"].as_f64(),
+                            _ => None,
+                        };
+
+                        match price {
+                            Some(p) => {
+                                let message = client
+                                    .send_text_message(format!("💰 Current {} price: ${:.2}", symbol, p))
+                                    .execute_then_return_message(|_, _| ());
+                                Ok(SuccessResult { message })
+                            },
+                            None => Err("Failed to parse price data".into()),
                         }
                     }
-                    Err(e) => CommandResponse::InternalError(format!("Failed to parse response: {}", e)),
+                    Err(_) => Err("Failed to parse API response".into()),
                 }
             }
-            Err(e) => CommandResponse::InternalError(format!("Failed to fetch price: {}", e)),
+            Err(_) => Err("Failed to fetch price data".into()),
+        }
+    }
+}
+
+impl Price {
+    fn definition() -> BotCommandDefinition {
+        BotCommandDefinition {
+            name: "price".to_string(),
+            description: Some("Get current price for a cryptocurrency".to_string()),
+            placeholder: Some("Fetching price...".to_string()),
+            params: vec![BotCommandParam {
+                name: "symbol".to_string(),
+                description: Some("The cryptocurrency symbol".to_string()),
+                placeholder: Some("Enter BTC, ETH, or ICP".to_string()),
+                required: true,
+                param_type: BotCommandParamType::StringParam(StringParam {
+                    min_length: 1,
+                    max_length: 3,
+                    choices: Vec::new(),
+                    multi_line: false,
+                }),
+            }],
+            permissions: BotPermissions::from_message_permission(MessagePermission::Text),
+            default_role: None,
+            direct_messages: Some(true),
         }
     }
 } 

@@ -89,7 +89,7 @@ async fn bot_definition(State(state): State<Arc<AppState>>) -> (StatusCode, Head
     let commands = state.commands.definitions();
     
     let definition = BotDefinition {
-        description: "A simple echo bot that repeats your messages".to_string(),
+        description: "uTip - AI-Powered DEX Trading Assistant & Crypto Tipping Bot".to_string(),
         commands,
         autonomous_config: None,
     };
