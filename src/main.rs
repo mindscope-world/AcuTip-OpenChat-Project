@@ -56,7 +56,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Create command registry and register the echo command
     let commands = CommandHandlerRegistry::new(client_factory)
-        .register(commands::echo::Echo);
+        .register(commands::echo::Echo)
+        .register(commands::price::Price);
 
     let app_state = AppState {
         oc_public_key: config.oc_public_key,
