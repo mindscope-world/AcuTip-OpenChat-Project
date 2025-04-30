@@ -232,6 +232,77 @@ acutip/
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## Future Developments
+
+### Planned Features
+1. Enhanced Price Alerts
+   - Percentage-based alerts
+   - Multiple condition alerts
+   - Alert expiration settings
+   - Custom notification sounds
+
+2. Advanced DEX Integration
+   - More DEX platforms support
+   - Custom whale threshold settings
+   - Historical transaction analysis
+   - Trading pair analytics
+
+3. Portfolio Management
+   - Portfolio tracking
+   - PnL calculations
+   - Investment performance metrics
+   - Portfolio rebalancing suggestions
+
+4. Technical Analysis
+   - Price trend indicators
+   - Moving averages
+   - RSI and MACD indicators
+   - Trading volume analysis
+
+5. User Experience
+   - Customizable UI themes
+   - Multi-language support
+   - Personalized alert preferences
+   - Dashboard view for all metrics
+
+6. Security Enhancements
+   - End-to-end encryption for alerts
+   - Two-factor authentication
+   - API key management
+   - Rate limiting controls
+
+### Roadmap
+- Q2 2025: Enhanced Price Alerts & Portfolio Management
+- Q3 2025: Advanced DEX Integration & Technical Analysis
+- Q4 2025: Security Enhancements & Multi-language Support
+
+## Contributors
+
+### Core Team
+- [Paul Ndirangu](https://github.com/mindscope) - Project Lead & Core Developer
+  - Bot Architecture
+  - Price Alert System
+  - DEX Integration
+- [Veranzi](https://github.com/Veranzi) - Project Manager & Core Planner
+  - Bot Architecture
+  - Price Alert System
+  - DEX Integration
+
+### Special Thanks
+- OpenChat Labs Team for the SDK
+- Internet Computer Community
+- Early testers and users
+
+### How to Contribute
+We welcome contributions of all kinds! Here are some ways you can help:
+- Report bugs and suggest features
+- Improve documentation
+- Add new cryptocurrency support
+- Enhance DEX monitoring capabilities
+- Write tests and improve code quality
+
+For detailed contribution guidelines, please see [CONTRIBUTING.md](CONTRIBUTING.md)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
