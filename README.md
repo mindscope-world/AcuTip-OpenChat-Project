@@ -71,6 +71,105 @@ oc_public_key = "YOUR_OC_PUBLIC_KEY"
 log_level = "INFO"
 ```
 
+## Bot Registration
+
+1. Visit [OpenChat](https://oc.app)
+
+2. Create a new group or use an existing one
+
+3. Register your bot:
+   - Type `/bots` in the chat
+   - Click "Register a Bot"
+   - Fill in the bot details:
+     - Name: AcuTip
+     - Description: Crypto price monitoring and DEX tracking bot
+     - Avatar: Upload a bot avatar (optional)
+   - For the bot URL, use your local server address:
+     ```
+     http://localhost:13457
+     ```
+   - Click "Register"
+
+4. Add the bot to your group:
+   - Type `/add @AcuTip` in the group chat
+   - The bot will join the group and be ready to use
+
+## Detailed Usage Guide
+![AcuTip Bot Screenshot](./static/acutip5.jpg)
+
+
+### Price Checking
+1. Type `/price` in the chat
+2. Select a cryptocurrency from the dropdown (BTC, ETH, or ICP)
+3. Click "Submit"
+4. The bot will respond with the current price:
+   ```
+   💰 Current BTC price: $93867.00
+   ```
+
+### Setting Price Alerts
+1. Type `/alert set` in the chat
+2. Fill in the alert details:
+   - Select cryptocurrency (BTC, ETH, or ICP)
+   - Enter target price (e.g., 80000)
+   - Choose condition (above/below)
+3. Click "Submit"
+4. The bot will confirm:
+   ```
+   🔔 Price alert set for BTC when price falls below $80000.00
+   ```
+
+### Managing Alerts
+1. List your alerts:
+   ```
+   /alert list
+   ```
+   Response shows all active alerts:
+   ```
+   📋 Your Price Alerts:
+   • BTC below $80000.00 (set 2024-04-30 17:59)
+   ```
+
+2. Remove an alert:
+   ```
+   /alert remove BTC
+   ```
+   Bot confirms:
+   ```
+   ✅ Removed price alert for BTC
+   ```
+
+### DEX Monitoring
+1. Monitor whale movements:
+   ```
+   /dex whale
+   ```
+   Shows large transactions:
+   ```
+   🐋 Whale Alert!
+   • 1000 ICP moved on Sonic DEX
+   • 500 ETH swapped on Uniswap
+   • 10 BTC transferred to exchange
+   ```
+
+2. Check liquidity:
+   ```
+   /dex liquidity
+   ```
+   Shows current liquidity:
+   ```
+   💧 Liquidity Update
+   • Sonic DEX: 1M ICP
+   • Uniswap: 500K ETH
+   • PancakeSwap: 100K BNB
+   ```
+
+### Best Practices
+- Set reasonable price alert thresholds
+- Use the list command to manage multiple alerts
+- Monitor DEX activities for market insights
+- Remove unused alerts to keep your list clean
+
 ## Usage
 
 1. Start the bot:
