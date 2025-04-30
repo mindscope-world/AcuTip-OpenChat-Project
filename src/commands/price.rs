@@ -73,12 +73,25 @@ impl Price {
             params: vec![BotCommandParam {
                 name: "symbol".to_string(),
                 description: Some("The cryptocurrency symbol".to_string()),
-                placeholder: Some("Enter BTC, ETH, or ICP".to_string()),
+                placeholder: Some("Select a cryptocurrency".to_string()),
                 required: true,
                 param_type: BotCommandParamType::StringParam(StringParam {
                     min_length: 1,
-                    max_length: 3,
-                    choices: Vec::new(),
+                    max_length: 10,
+                    choices: vec![
+                        BotCommandOptionChoice {
+                            name: "Bitcoin (BTC)".to_string(),
+                            value: "BTC".to_string(),
+                        },
+                        BotCommandOptionChoice {
+                            name: "Ethereum (ETH)".to_string(),
+                            value: "ETH".to_string(),
+                        },
+                        BotCommandOptionChoice {
+                            name: "Internet Computer (ICP)".to_string(),
+                            value: "ICP".to_string(),
+                        },
+                    ],
                     multi_line: false,
                 }),
             }],

@@ -16,6 +16,7 @@ use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use tracing::{info, error};
 use tracing_subscriber::fmt::format::FmtSpan;
+use crate::commands::alert::Alert;
 
 mod config;
 mod commands;
@@ -54,10 +55,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let runtime = AgentRuntime::new(agent, tokio::runtime::Runtime::new()?);
     let client_factory = Arc::new(ClientFactory::new(runtime));
 
-    // Create command registry and register the echo command
+    // Create command registry and register commands
     let commands = CommandHandlerRegistry::new(client_factory)
         .register(commands::echo::Echo)
-        .register(commands::price::Price);
+        .register(commands::price::Price)
+        .register(commands::dex::DexMonitor)
+        .register(Alert::new());
 
     let app_state = AppState {
         oc_public_key: config.oc_public_key,
