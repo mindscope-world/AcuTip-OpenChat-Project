@@ -1,99 +1,149 @@
-# AcuTip-OpenChat-Project
+# AcuTip - OpenChat Crypto Bot
 
-# Create OpenChat Bot
+AcuTip is a powerful OpenChat bot designed to help users monitor cryptocurrency prices, set price alerts, and track DEX (Decentralized Exchange) activities. Built with Rust using the OpenChat Bot SDK, it provides real-time cryptocurrency information and alerts.
 
-A CLI tool for instantly creating OpenChat bots.
+![AcuTip Bot Screenshot](./static/acutip.png)
 
-[![npm version](https://img.shields.io/npm/v/create-openchat-bot.svg)](https://www.npmjs.com/package/create-openchat-bot)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## Features
 
-## Table of Contents
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Registering Your Bot](#registering-your-bot)
-- [SDK Documentation for Rust bots](#sdk-documentation-for-rust-bots)
-- [Bot Types](#bot-types)
-- [SDKs](#sdks)
-- [Overview](#overview)
-- [License](#license)
+### 1. Price Monitoring (`/price`)
+- Real-time cryptocurrency price checking
+- Supported cryptocurrencies:
+  - Bitcoin (BTC)
+  - Ethereum (ETH)
+  - Internet Computer (ICP)
+- Clean and intuitive interface with dropdown selection
+![AcuTip Bot Price Screenshot](./static/acutip4.png)
 
-## Prerequisites
+### 2. Price Alerts (`/alert`)
+- Set custom price alerts for cryptocurrencies
+- Multiple alert types:
+  - Price above threshold
+  - Price below threshold
+- Alert management commands:
+  - `/alert set` - Create new price alerts
+  - `/alert list` - View all active alerts
+  - `/alert remove` - Remove existing alerts
+- Real-time notifications when price conditions are met
+![AcuTip Bot Alert Screenshot](./static/acutip2.png)
 
-For both onchain and offchain bot, you need to have installed the following tools: 
-- [Rust](https://www.rust-lang.org/tools/install)
-- [DFX](https://internetcomputer.org/docs/current/developer-docs/setup/install/) (for identity management)
+### 3. DEX Monitoring (`/dex`)
+- Track decentralized exchange activities
+- Two monitoring modes:
+  - `whale` - Monitor large transactions
+  - `liquidity` - Track liquidity pools
+- Features:
+  - Whale movement tracking
+  - Liquidity pool monitoring
+  - Transaction volume tracking
+  - Real-time updates
+![AcuTip Bot DEX Screenshot](./static/acutip3.png)
 
 ## Installation
 
+1. Clone the repository:
 ```bash
-npm install -g create-openchat-bot
+git clone https://github.com/yourusername/acutip.git
+cd acutip
+```
+
+2. Install the required dependencies:
+```bash
+cargo build
+```
+
+3. Create a new identity for your bot:
+```bash
+dfx identity new acubot_identity --storage-mode=plaintext
+```
+
+4. Export the identity to PEM file:
+```bash
+dfx identity export acubot_identity > identity.pem
+```
+
+5. Create a config.toml file:
+```toml
+pem_file = "./identity.pem"
+ic_url = "https://icp0.io"
+port = 13457
+oc_public_key = "YOUR_OC_PUBLIC_KEY"
+log_level = "INFO"
 ```
 
 ## Usage
 
+1. Start the bot:
 ```bash
-npx create-openchat-bot
+cargo run
 ```
 
-This will:
-1. Ask you which type of bot you want to create (offchain or onchain)
-2. Ask for your bot's name
-3. Create a new directory with the template
-4. Set up the necessary configuration
-5. Run the appropriate setup script
+2. Available Commands:
+   - Check cryptocurrency prices:
+     ```
+     /price BTC
+     ```
+   - Set a price alert:
+     ```
+     /alert set BTC 80000 below
+     ```
+   - Monitor DEX activities:
+     ```
+     /dex whale
+     /dex liquidity
+     ```
 
-## Registering Your Bot
+## Configuration
 
-Follow the instructions [here](https://github.com/ICP-HUBS-DevRels-Syndicate/openchat-bots/blob/main/REGISTER-BOT.md) to register your bot with OC and test it out.
+The bot can be configured through the `config.toml` file:
+- `pem_file`: Path to your identity PEM file
+- `ic_url`: Internet Computer URL
+- `port`: Port number for the bot server
+- `oc_public_key`: OpenChat public key
+- `log_level`: Logging level (INFO, DEBUG, etc.)
 
-> **Note:** This package is in beta mode and currently only supports the Rust SDK. The Motoko and TypeScript SDKs are in the pipeline.
+## Development
 
-## SDK Documentation for Rust bots: 
-You can now check out the SDK documentation for rust bots [here](https://github.com/open-chat-labs/open-chat-bots/tree/main/rs/sdk)
+### Prerequisites
+- Rust
+- DFX (for identity management)
+- Internet Computer SDK
 
-## Bot Types
+### Project Structure
+```
+acutip/
+├── src/
+│   ├── commands/
+│   │   ├── alert.rs
+│   │   ├── dex.rs
+│   │   ├── price.rs
+│   │   └── mod.rs
+│   ├── config.rs
+│   └── main.rs
+├── Cargo.toml
+├── config.toml
+└── README.md
+```
 
-### Offchain Bot
-- Runs on your local machine
-- Good for development and testing
-- No Internet Computer deployment needed
-- Quick setup and iteration
+## Contributing
 
-### Onchain Bot
-- Deploys to the Internet Computer
-- Runs on the blockchain
-- More complex setup
-- Requires DFX and Internet Computer tools
-
-## SDKs
-
-SDKs are available in different languages: 
-- Rust SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/rs/README.md)
-- Typescript SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/ts/README.md)
-- Motoko SDK, see the documentation [here](https://github.com/open-chat-labs/open-chat-bots/blob/main/motoko/README.md)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Copyright (c) 2025 ICP-HUBS-DevRels-Syndicate
+## Acknowledgments
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+- Built with [OpenChat Bot SDK](https://github.com/open-chat-labs/open-chat-bots)
+- Uses CoinGecko API for cryptocurrency price data
+- Special thanks to the Internet Computer community
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## Support
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE. 
+For support, please open an issue in the GitHub repository or contact the maintainers. 
 
