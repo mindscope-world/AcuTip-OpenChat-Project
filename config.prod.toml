@@ -1,5 +1,4 @@
 pem_file = "./identity.pem"
 ic_url = "https://icp0.io"
-port = 10000
 oc_public_key = """YOUR_OC_PUBLIC_KEY"""
 log_level = "INFO" 

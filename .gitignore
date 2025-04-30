@@ -22,3 +22,7 @@ node_modules/
 .cargo/
 .DS_Store
 .cursor/
+
+identity.pem
+
+config.prod.toml
