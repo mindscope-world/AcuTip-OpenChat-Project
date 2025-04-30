@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: acutip-bot
+    runtime: rust
+    plan: free
+    buildCommand: cargo build --release
+    startCommand: ./target/release/acubot
+    envVars:
+      - key: RUST_LOG
+        value: info
+      - key: CONFIG_FILE
+        value: ./config.toml
+    autoDeploy: true 
